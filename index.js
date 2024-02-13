@@ -1,38 +1,94 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
+const Reservation = require("./models/reservation.js");
+require("./db.js/index.js");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors()); // Use CORS to avoid cross-origin issues
-app.use(express.json()); // Parse JSON bodies
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('Could not connect to MongoDB', err));
-
-// Routes
-const reservationsRouter = require('./routes/reservations');
-app.use('/api', reservationsRouter); // Use reservations routes with base path `/api`
-
-// Root Route (Optional)
-app.get('/', (req, res) => {
-  // If you're serving a front-end application:
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-  // Or, just send a response:
-  // res.send('Welcome to the Railway Reservation System!');
+// Serve the index.html for normal users
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+// Serve the admin.html for admin users
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/admin.html"));
+});
+
+// Controller for handling form submission
+app.post("/api/reservations", async (req, res) => {
+  try {
+    // Extracting data from the request body
+    const {
+      from,
+      to,
+      trainNumber,
+      class: travelClass,
+      passengers,
+      passengerDetails,
+      address,
+      paymentMode,
+      mobileNumber,
+    } = req.body;
+
+    // Creating a new reservation object
+    const newReservation = new Reservation({
+      from,
+      to,
+      trainNumber,
+      class: travelClass,
+      passengers,
+      passengerDetails,
+      address,
+      paymentMode,
+      mobileNumber,
+    });
+
+    // Saving the reservation to the database
+    await newReservation.save();
+
+    // Sending a success response
+    res.status(201).json({ message: "Reservation created successfully" });
+  } catch (error) {
+    // Handling errors
+    console.error("Error during reservation creation:", error);
+    res.status(500).json({ error: `Internal Server Error: ${error.message}` });
+  }
+});
+
+// Get all reservations
+app.get("/api/reservations", async (req, res) => {
+  try {
+    const reservations = await Reservation.find();
+    res.json(reservations);
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Delete a reservation by ID
+app.delete("/api/reservations/:id", async (req, res) => {
+  try {
+    const deletedReservation = await Reservation.findByIdAndDelete(req.params.id);
+    if (!deletedReservation) {
+      return res.status(404).json({ error: "Reservation not found" });
+    }
+    res.json({ message: "Reservation deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting reservation:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Error handling middleware
+
+app.listen(port, () => {
+  console.log(`Server is running at port no ${port}`);
 });
