@@ -1,8 +1,8 @@
-const express = require("express");
-const path = require("path");
-const cors = require("cors");
-const Reservation = require("./models/reservation.js");
-require("./db.js/index.js");
+const express = require('express');
+const path = require('path');
+const cors = require('cors');
+const Reservation = require('./models/reservation.js');
+require('./db.js/index.js');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -11,18 +11,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
-// Serve the index.html for normal users
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "./public/index.html"));
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Define your routes and controllers directly in this file
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
-// Serve the admin.html for admin users
-app.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "./public/admin.html"));
+app.get('/cart', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/cart.html'));
 });
 
 // Controller for handling form submission
-app.post("/api/reservations", async (req, res) => {
+app.post('/api/reservations', async (req, res) => {
   try {
     // Extracting data from the request body
     const {
@@ -54,13 +56,15 @@ app.post("/api/reservations", async (req, res) => {
     await newReservation.save();
 
     // Sending a success response
-    res.status(201).json({ message: "Reservation created successfully" });
+    res.redirect('/cart'); // Redirect to the homepage
   } catch (error) {
     // Handling errors
-    console.error("Error during reservation creation:", error);
+    console.error('Error during reservation creation:', error);
     res.status(500).json({ error: `Internal Server Error: ${error.message}` });
   }
 });
+
+
 
 // Get all reservations
 app.get("/api/reservations", async (req, res) => {
