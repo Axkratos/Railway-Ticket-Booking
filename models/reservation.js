@@ -5,6 +5,10 @@ const reservationSchema = new mongoose.Schema({
   to: String,
   trainNumber: Number,
   class: String,
+  photo:{
+    type:String,
+    default:'default-photo.jpg'  
+  },
   passengers: Number,
   passengerDetails: [{
     name: String,

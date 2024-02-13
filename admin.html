@@ -46,6 +46,7 @@
                         <td>${reservation.to}</td>
                         <td>${reservation.mobileNumber}</td>
                         <td>
+                          <button class="btn btn-primary view-btn" data-id="${reservation._id}">View</button>
                           <button class="btn btn-danger delete-btn" data-id="${reservation._id}">Delete</button>
                         </td>
                       </tr>`;
@@ -69,6 +70,19 @@
         console.error('Error deleting reservation:', error);
       }
     }
+
+    // Function to view a reservation by ID
+    function viewReservation(id) {
+      window.location.href = `viewReservation.html?id=${id}`;
+    }
+
+    // Event listener for view buttons
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('view-btn')) {
+        const id = event.target.getAttribute('data-id');
+        viewReservation(id);
+      }
+    });
 
     // Event listener for delete buttons
     document.addEventListener('click', function(event) {

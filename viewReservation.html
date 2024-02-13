@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Reservation</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">View Reservation</h2>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Reservation Details</h5>
+        <p class="card-text">From: <span id="from"></span></p>
+        <p class="card-text">To: <span id="to"></span></p>
+        <p class="card-text">Train Number: <span id="trainNumber"></span></p>
+        <p class="card-text">Class: <span id="class"></span></p>
+        <p class="card-text">Passengers: <span id="passengers"></span></p>
+        <p class="card-text">Address: <span id="address"></span></p>
+        <p class="card-text">Payment Mode: <span id="paymentMode"></span></p>
+        <p class="card-text">Mobile Number: <span id="mobileNumber"></span></p>
+        <img src="" id="photo" class="card-img-top" alt="Reservation Photo">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // Function to fetch reservation details by ID
+    async function fetchReservationDetails() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const reservationId = urlParams.get('id');
+        const response = await fetch(`http://localhost:5000/api/reservations/${reservationId}`);
+        const reservation = await response.json();
+        document.getElementById('from').textContent = reservation.from;
+        document.getElementById('to').textContent = reservation.to;
+        document.getElementById('trainNumber').textContent = reservation.trainNumber;
+        document.getElementById('class').textContent = reservation.class;
+        document.getElementById('passengers').textContent = reservation.passengers;
+        document.getElementById('address').textContent = reservation.address;
+        document.getElementById('paymentMode').textContent = reservation.paymentMode;
+        document.getElementById('mobileNumber').textContent = reservation.mobileNumber;
+        if (reservation.photo) {
+          document.getElementById('photo').src = `data:image/jpeg;base64,${reservation.photo}`;
+        } else {
+          document.getElementById('photo').src = 'default-photo.jpg'; // Replace with default photo URL
+        }
+      } catch (error) {
+        console.error('Error fetching reservation details:', error);
+      }
+    }
+
+    // Fetch reservation details when the page loads
+    fetchReservationDetails();
+  </script>
+</body>
+</html>

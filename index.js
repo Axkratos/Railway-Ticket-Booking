@@ -3,18 +3,32 @@ const path = require('path');
 const cors = require('cors');
 const Reservation = require('./models/reservation.js');
 require('./db.js/index.js');
-
+const multer = require('multer');
 const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
+const storage = multer.memoryStorage();
 
-// Serve static files from the 'public' directory
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024,
+    },
+    fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Invalid file type. Only JPEG, PNG, and GIF are allowed.'));
+        }
+    },
+}).single('photo');
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Define your routes and controllers directly in this file
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
@@ -23,23 +37,9 @@ app.get('/cart', (req, res) => {
   res.sendFile(path.join(__dirname, './public/cart.html'));
 });
 
-// Controller for handling form submission
-app.post('/api/reservations', async (req, res) => {
+app.post('/api/reservations', upload, async (req, res) => {
   try {
-    // Extracting data from the request body
-    const {
-      from,
-      to,
-      trainNumber,
-      class: travelClass,
-      passengers,
-      passengerDetails,
-      address,
-      paymentMode,
-      mobileNumber,
-    } = req.body;
-
-    // Creating a new reservation object
+    const { from, to, trainNumber, class: travelClass, passengers, passengerDetails, address, paymentMode, mobileNumber } = req.body;
     const newReservation = new Reservation({
       from,
       to,
@@ -49,22 +49,16 @@ app.post('/api/reservations', async (req, res) => {
       passengerDetails,
       address,
       paymentMode,
+      photo: req.file ? req.file.buffer.toString('base64') : null,
       mobileNumber,
     });
-
-    // Saving the reservation to the database
     await newReservation.save();
-
-    // Sending a success response
-    res.redirect('/cart'); // Redirect to the homepage
+    res.redirect('/cart');
   } catch (error) {
-    // Handling errors
     console.error('Error during reservation creation:', error);
     res.status(500).json({ error: `Internal Server Error: ${error.message}` });
   }
 });
-
-
 
 // Get all reservations
 app.get("/api/reservations", async (req, res) => {
@@ -77,7 +71,20 @@ app.get("/api/reservations", async (req, res) => {
   }
 });
 
-// Delete a reservation by ID
+// Get reservation by ID
+app.get("/api/reservations/:id", async (req, res) => {
+  try {
+    const reservation = await Reservation.findById(req.params.id);
+    if (!reservation) {
+      return res.status(404).json({ error: "Reservation not found" });
+    }
+    res.json(reservation);
+  } catch (error) {
+    console.error("Error fetching reservation:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 app.delete("/api/reservations/:id", async (req, res) => {
   try {
     const deletedReservation = await Reservation.findByIdAndDelete(req.params.id);
@@ -90,8 +97,6 @@ app.delete("/api/reservations/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-// Error handling middleware
 
 app.listen(port, () => {
   console.log(`Server is running at port no ${port}`);
