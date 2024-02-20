@@ -30,13 +30,31 @@
       <div class="form-group row">
         <label for="from" class="col-sm-2 col-form-label">From</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="from" name="from" placeholder="Enter From">
+          <select class="form-control" id="from" name="From">
+            <option value="-1">Select</option>
+            <option value="Janakpurdham">Janakpurdham</option>
+            <option value="Deuriparbaha">Deuri Parbaha</option>
+            <option value="Baidehi">Baidehi,Itaharwa</option>
+            <option value="Sahibsarojnagar">Sahib Sarojnagar,Duhabi</option>
+            <option value="Mahinathpur">Mahinathpur</option>
+            <option value="Khajuri">Khajuri</option>
+            <option value="Inarwa">Inarwa</option>
+          </select>
         </div>
       </div>
       <div class="form-group row">
         <label for="to" class="col-sm-2 col-form-label">To</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" id="to" name="to" placeholder="Enter To">
+        <div class="col-sm-10">                               
+           <select class="form-control" id="to" name="To">
+            <option value="-1">Select</option>
+            <option value="Inarwa">Inarwa</option>
+            <option value="Khajuri">Khajuri</option>
+            <option value="Mahinathpur">Mahinathpur</option>
+            <option value="Sahibsarojnagar">Sahib Sarojnagar,Duhabi</option>
+            <option value="Baidehi">Baidehi,Itaharwa</option>
+            <option value="Deuriparbaha">Deuri Parbaha</option>
+            <option value="Janakpurdham">Janakpurdham</option>
+          </select>
         </div>
       </div>
       <div class="form-group row">
@@ -104,15 +122,18 @@
           <div class="form-check">
             <input class="form-check-input" type="radio" name="paymentMode" id="esewa" value="Esewa">
             <label class="form-check-label" for="esewa">Esewa</label>
+            <img src="qrlala.jpg" alt="esewa qr" style="width: 200px; height: auto;">
           </div>
+          <p></p>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="paymentMode" id="khalti" value="Khalti">
             <label class="form-check-label" for="khalti">Khalti</label>
+            <img src="qrlala.jpg" alt="esewa qr" style="width: 200px; height: auto;">
           </div>
         </div>
       </div>
       <div class="form-group row">
-        <label for="address" class="col-sm-2 col-form-label">Photo</label>
+        <label for="address" class="col-sm-2 col-form-label">Payment Slip</label>
         <div class="col-sm-10">
           <input type="file" class="form-control" id="photo" name="photo" placeholder="Enter Transaction Slip">
         </div>
@@ -121,7 +142,10 @@
         <div class="col-sm-10">
           <input type="text" class="form-control" id="mobileNumber" name="mobileNumber" placeholder="Enter Mobile No.">
         </div>
-      </div>
+      </div> 
+        
+      
+        
 
       <div class="form-group row">
         <div class="col-sm-10 offset-sm-2">
