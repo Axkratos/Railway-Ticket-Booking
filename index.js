@@ -40,6 +40,7 @@ app.get('/cart', (req, res) => {
 app.post('/api/reservations', upload, async (req, res) => {
   try {
     const { from, to, trainNumber, class: travelClass, passengers, passengerDetails, address, paymentMode, mobileNumber } = req.body;
+    console.log(req.body)
     const newReservation = new Reservation({
       from,
       to,
