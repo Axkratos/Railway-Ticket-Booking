@@ -98,6 +98,23 @@ app.delete("/api/reservations/:id", async (req, res) => {
   }
 });
 
+const adminCredentials = {
+  email: 'admin@gmail.com',
+  password: 'admin'
+};
+
+// Route for handling admin login
+app.post('/adminlogin', cors(),(req, res) => {
+  const { email, password } = req.body;
+  console.log(req.body)
+
+  if (email === adminCredentials.email && password === adminCredentials.password) {
+      res.json({ success: true, message: 'Admin login successful' });
+  } else {
+      res.status(401).json({ success: false, message: 'Invalid email or password' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running at port no ${port}`);
 });

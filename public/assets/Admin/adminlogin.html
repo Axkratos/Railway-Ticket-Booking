@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="adminlogin.css">
+</head>
+
+<body>
+    <div class="form-container sign-in">
+        <form id="loginForm" action="http://localhost:5000/adminlogin" method="post">
+            <h2>Login-form</h2>
+            <div class="input-field">
+                <input type="text" name="email" required />
+                <label>Enter email </label>
+            </div>
+            <div class="input-field">
+                <input type="password" name="password" required />
+                <label> Enter Password</label>
+            </div>
+        
+            <button type="submit">log in</button>
+        </form>
+        
+    </div>
+
+    <script>
+        // Access the login form
+        const loginForm = document.getElementById('loginForm');
+        
+        // Add event listener for form submission
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent default form submission
+            
+            const formData = new FormData(loginForm); // Get form data
+            const email = formData.get('email'); // Get email from form data
+            const password = formData.get('password'); // Get password from form data
+            
+            // Make POST request to login endpoint
+            const response = await fetch('http://localhost:5000/adminlogin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password }) // Send both email and password in the request body
+            });
+
+            if (response.ok) {
+                // If login is successful, save the email in localStorage
+                localStorage.setItem('email', email);
+                // Redirect or perform other actions as needed
+                window.location.href = './admin.html'; // Redirect to homepage
+            } else {
+                // Handle login failure
+                const errorMessage = await response.text();
+                console.error('Login failed:', errorMessage);
+                // Display error message to the user or perform other actions as needed
+            }
+        });
+    </script>
+</body>
+
+</html>
